@@ -88,6 +88,11 @@ input[type="color"] {
   font-size: 12px; margin: 0 auto;
 }
 
+@media screen and (max-width: 834px) {
+  .grid-tools-options { gap: 0; }
+  .grid-tools-options button, #color-icon { padding: 5px; font-size: 9px; }
+  
+}
 @media screen and (max-width: 768px) {
   .grid-col {
     height: 0.85em; width: 0.85em;
