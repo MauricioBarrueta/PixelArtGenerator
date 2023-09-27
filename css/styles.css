@@ -1,0 +1,95 @@
+@import url("https://fonts.googleapis.com/css2?family=Silkscreen&display=swap");
+
+* {
+  padding: 0; margin: 0; box-sizing: border-box;
+  font-family: "Silkscreen", cursive, FontAwesome;
+}
+span { cursor: default; }
+
+.grid-options, .grid-tools-options, .grid-options-buttons, .grid-row { display: flex; }
+
+body { 
+  max-width: 100vw; padding: 1em;
+  background-color: #212529;   
+}
+
+.container {
+  width: 90vw; min-height: 95vh; max-height: fit-content;
+  background-color: whitesmoke;
+  padding: 0.5rem 1em; border-radius: 10px;
+}
+
+/* Grid Options */
+.grid-options-title { 
+  width: 100%; display: inline-block;
+  text-align: center; font-size: 17px;
+  padding: 5px; margin-bottom: 5px;
+}
+.grid-options, .grid-tools-options {
+  justify-content: space-between; 
+  gap: 10px;
+}
+.grid-options input::placeholder { font-size: 10px; }
+
+/* Grid Controls */
+.grid-options-buttons { 
+  justify-content: center; flex-wrap: wrap; 
+  gap: 20px; padding: 0.5rem; margin: -10px 0 5px 0;  
+}
+.grid-options-buttons button { font-size: 14px; }
+.grid-options-buttons span { 
+  display: inline-flex;  align-items: center;
+}
+
+/* Grid Tools Title */
+.tools-title { border-top: 2px solid; }
+.grid-tools-options {
+  background-color: #707479; border-radius: 5px;
+  justify-content: space-around; text-align: center; padding: 5px;  
+}
+.grid-tools-options button, #color-icon { font-size: 10px; }
+#color-icon { 
+  cursor: default; background-color: #212529; 
+  border: 0; color: white;
+}
+input[type="color"] {
+  background-color: transparent; border: none;
+}
+.grid-tools-options input[type="color"]::-moz-color-swatch {
+  background-color: transparent; cursor: pointer;
+  border-radius: 0 8px 8px 0; border-color: #212529; border-width: 2px;
+  transition: 0.25s;
+}
+.grid-tools-options input[type="color"]::-moz-color-swatch:hover { border-color: white; }
+
+/* Grid Container */
+.grid-container { padding: 5px; }
+.grid-col {
+  height: 1em; width: 1em;
+  border: 1px solid #707479; cursor: cell;
+}
+.grid-row { justify-content: center; }
+
+/* Alert Modal */
+.modal-header {
+  text-align: center; color: white;
+  background-color: #212529;
+}
+.modal-title { width: 100%; display: inline-block; }
+.modal-title, .modal-body p {
+  font-size: 12px; 
+  margin: 0; text-align: center;
+}
+.modal-body img {
+  width: 15px; margin-left: 8px;
+  transform: rotate(270deg);
+}
+.modal-footer button {
+  font-size: 12px; margin: 0 auto;
+}
+
+@media screen and (max-width: 768px) {
+  .grid-col {
+    height: 0.85em; width: 0.85em;
+  }
+}
