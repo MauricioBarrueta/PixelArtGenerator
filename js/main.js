@@ -1,112 +1,122 @@
-let gridWidthValue = document.getElementById("grid-width"), gridHeightValue = document.getElementById("grid-height");
-let gridContainer = document.querySelector(".grid-container");
-let createGridBtn = document.getElementById("create-grid"), deleteGridBtn = document.getElementById("delete-grid");
-let colorPickerBtn = document.getElementById("color-input"), eraseBtn = document.getElementById("erase-btn"), 
-    drawBtn = document.getElementById("paint-btn");
+const gridWrapper = document.querySelector(".grid-wrapper"), gridContainer = document.querySelector(".grid-container")
+const paintBtn = document.getElementById("paint-btn"), eraseBtn = document.getElementById("erase-btn"), clearGridBtn = document.getElementById("clear-grid-btn"),
+    colorPickerBtn = document.getElementById("color-input")
+const rows = 20, col = 30,  pixel = 16
 
-window.onload = () => {
-    gridWidthValue.value = '';
-    gridHeightValue.value = '';    
-    colorPickerBtn.disabled = true, eraseBtn.disabled = true, drawBtn.disabled = true
-    if(window.innerWidth <= 768) $('#alert-modal').modal("show"); 
-};
+let isDrawing = false
+let isErasing = false
+let deviceType = ''
 
-/* Objeto que contiene los eventos de acuerdo al tipo de dispositivo */
-let deviceEvents = {
-    mouse: {
-        up: "mouseup",
-        down: "mousedown",
-        move: "mousemove"        
-    },
-    touch: {
-        up: "touchend",
-        down: "touchstart",
-        mobe: "touchmove"        
-    },
-};
-
-/* Verifica si se está ejecutando en un dispositivo touch */
-let deviceType = "";
+/* Detecta el tipo de dispositivo */
 const isTouchDevice = () => {
     try {
-        document.createEvent("TouchEvent");
-        deviceType = "touch";
-        return true;
-    } catch (e) {
-        deviceType = "mouse";
-        return false;
+        document.createEvent("TouchEvent")
+        deviceType = "touch"
+        return true
+    } catch {
+        deviceType = "mouse"
+        return false
     }
+}
+isTouchDevice()
+
+/* Objeto que contiene los eventos de acuerdo al tipo de dispositivo */
+const deviceEvents = {
+    mouse: { down: "mousedown", move: "mousemove", up: "mouseup" },
+    touch: { down: "touchstart", move: "touchmove", up: "touchend" }
 };
-isTouchDevice();
 
-/* Borra la cuadrícula creada */
-deleteGridBtn.addEventListener("click", () => {
-    gridContainer.innerHTML = "";
-    colorPickerBtn.disabled = true, eraseBtn.disabled = true, drawBtn.disabled = true
-});
+window.onload = () => {
+    createGrid(rows, col);
+};
 
-/* Crea la cuadrícula de acuerdo a las filas y columnas ingresadas */
-let isDrawing = false, isErasing = false;
-createGridBtn.addEventListener("click", () => {
-    gridContainer.innerHTML = "";
-    colorPickerBtn.disabled = false, eraseBtn.disabled = false, drawBtn.disabled = false
-    let count = 0;
-    if (gridWidthValue.value <= 50 && gridHeightValue.value <= 25) {
-        for (let i = 0; i < gridHeightValue.value; i++) {
-            count += 2;
-            let row = document.createElement("div");
-            row.classList.add("grid-row");
+/* Se genera la cuadrícula */
+const createGrid = (rows, cols) => {
+    gridContainer.innerHTML = ''
 
-            for (let j = 0; j < gridWidthValue.value; j++) {
-                count += 2;
-                let col = document.createElement("div");
-                col.classList.add("grid-col");
-                col.setAttribute("id", `col-#${count}`);
-                col.addEventListener(deviceEvents[deviceType].down, () => {
-                    isDrawing = true;
-                    isErasing ? col.style.backgroundColor = 'transparent' : col.style.backgroundColor = colorPickerBtn.value;                   
-                });
+    for (let i = 0; i < rows; i++) {
+        const row = document.createElement('div')
+        row.classList.add('grid-row')
 
-                col.addEventListener(deviceEvents[deviceType].move, (e) => {
-                    let elementId = document.elementFromPoint(
-                        !isTouchDevice() ? e.clientX : e.touches[0].clientX,
-                        !isTouchDevice() ? e.clientY : e.touches[0].clientY,
-                    ).id;
-                    getColIdOnMoveEvnt(elementId);
-                });
-                col.addEventListener(deviceEvents[deviceType].up, () => {
-                    isDrawing = false;
-                });
-                row.appendChild(col);
-            }
-            gridContainer.appendChild(row);
+        for (let j = 0; j < cols; j++) {
+            const col = document.createElement('div')
+            col.classList.add('grid-col')
+            col.addEventListener(deviceEvents[deviceType].down, (e) => {
+                e.preventDefault()
+                isDrawing = true
+                paintCell(col)
+            });
+            col.addEventListener(deviceEvents[deviceType].move, (e) => {
+                if (!isDrawing) return
+
+                const x = deviceType === "mouse" ? e.clientX : e.touches[0].clientX
+                const y = deviceType === "mouse" ? e.clientY : e.touches[0].clientY
+                const el = document.elementFromPoint(x, y)
+                if (el && el.classList.contains('grid-col')) {
+                    paintCell(el)
+                }
+            });
+            col.addEventListener(deviceEvents[deviceType].up, () => {
+                isDrawing = false
+            });
+
+            row.appendChild(col)
         }
-    } else {
-        alert('Has superado el límite, vuelve a intentarlo')
-        gridHeightValue.value = '', gridWidthValue.value = '';
+        gridContainer.appendChild(row)
     }
-});
 
-/* Obtiene el id de la columna cuando el mouse/touch se está moviendo */
-function getColIdOnMoveEvnt(columnId) {
-    let gridColumns = document.querySelectorAll(".grid-col");
-    gridColumns.forEach((element) => {
-        if (columnId == element.id) {
-            if (isDrawing && !isErasing) {
-                element.style.backgroundColor = colorPickerBtn.value;
-            } else if (isDrawing && isErasing) {
-                element.style.backgroundColor = "transparent";
-            }
-        }
-    });
+    autoScaleGrid()
 }
 
-/* Para borrar contenido seleccionado de la cuadrícula */
-eraseBtn.addEventListener("click", () => {
-    isErasing = true;
+/* Controla si se pinta o se borra el pixel */
+const paintCell = (cell) => {
+    cell.style.backgroundColor = isErasing ? 'transparent' : colorPickerBtn.value
+}
+
+/* Controla el estado de la variable, si es que se esta pintando o borrando */
+paintBtn.addEventListener('click', () => isErasing = false)
+eraseBtn.addEventListener('click', () => isErasing = true)
+
+/* Limpia toda la cuadrícula */
+clearGridBtn.addEventListener('click', () => {
+    document.querySelectorAll('.grid-col').forEach(col => {
+        col.style.backgroundColor = 'transparent'
+    });
 });
 
-/* Para volver a dibujar sobre la cuadrícula */
-drawBtn.addEventListener("click", () => {
-    isErasing = false;
+/* Controla cuál botón está seleccionado (pintar o borrar) y le agrega la clase .active */
+function setActiveButton(activeBtn) {
+    [paintBtn, eraseBtn].forEach(btn => btn.classList.remove("active"))
+    activeBtn.classList.add("active")
+}
+paintBtn.addEventListener("click", () => {
+    isErasing = false
+    setActiveButton(paintBtn)
 });
+eraseBtn.addEventListener("click", () => {
+    isErasing = true
+    setActiveButton(eraseBtn)
+});
+
+/* Escala automáticamente la cuadrícula dentro del contenedor, manteniendo la proporción y evitando desbordes */
+const autoScaleGrid = () => {
+    if (!gridWrapper) return
+
+    const wrapperWidth = gridWrapper.clientWidth
+    const wrapperHeight = gridWrapper.clientHeight
+
+    const gridWidth = col * pixel
+    const gridHeight = rows * pixel
+
+    const scaleX = wrapperWidth / gridWidth;
+    const scaleY = wrapperHeight / gridHeight;
+
+    let scale = Math.min(scaleX, scaleY)
+
+    scale = Math.max(1, Math.min(scale, 3))
+
+    gridContainer.style.transform = `scale(${scale})`
+}
+
+/* Recalcula la cuadrícula cuando la página cambia de tamaño */
+window.addEventListener("resize", autoScaleGrid)
