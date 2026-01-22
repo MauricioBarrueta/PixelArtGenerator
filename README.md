@@ -1,7 +1,8 @@
-🇲🇽 Sitio web desarrollado con JavaScript, la biblioteca jQuery, CSS y Bootstrap, publicado mediante GitHub Pages.
+🇲🇽 Sitio web desarrollado con JavaScript, CSS y Bootstrap, publicado mediante GitHub Pages.
 
-🇺🇸 Website developed with JavaScript, jQuery library, CSS and Bootstrap, published via GitHub Pages.
+🇺🇸 Website developed with JavaScript, CSS and Bootstrap, published via GitHub Pages.
 
 🔗 https://mauriciobarrueta.github.io/PixelArtGenerator/
 
-![pixel-maker](https://github.com/user-attachments/assets/6e3cb969-378a-46c5-a40f-f4419caf39e1)
+
+<img width="1366" height="653" alt="pixel-maker" src="https://github.com/user-attachments/assets/f176f22e-7146-4c79-bce3-5ff738d2a5f5" />
